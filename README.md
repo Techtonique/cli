@@ -1,6 +1,6 @@
 # CLI for Techtonique
 
-This a **Command Line Interface** (CLI) for [Techtonique](https://www.techtonique.net). 
+This a **Command Line Interface** (CLI) for [Techtonique](https://www.techtonique.net)'s [API](https://www.techtonique.net/docs). 
 
 ## Installation
 
