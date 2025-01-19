@@ -64,11 +64,11 @@ release: dist ## package and upload a release
 	python3 -m twine upload --repository pypi dist/* --verbose
 
 dist: clean ## builds source and wheel package
-	uv pip install build
+	pip install build
 	python3 -m build
 	
 install: clean ## install the package to the active Python's site-packages
-	uv pip install -e .
+	pip install -e .
 
 build-site: docs ## export mkdocs website to a folder		
 	cp -rf techtonique_cli-docs/* ../../../Pro_Website/Techtonique.github.io/techtonique_cli

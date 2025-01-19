@@ -4,6 +4,11 @@ import os
 from pathlib import Path
 
 
+@click.command()
+def cli():
+    """Main entry point for the CLI."""
+    click.echo("Welcome to Techtonique CLI!")
+
 # # Help
 # python3 cli/cli.py --help
 # python3 cli/cli.py forecasting --help
@@ -120,6 +125,7 @@ def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replicat
     Example:
 
         ```python
+
         techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 3
         
         ```
@@ -165,6 +171,7 @@ def multivariate(ctx, file, base_model, n_hidden_features, lags, h):
     Example:
 
         ```python
+
         techtonique forecasting multivariate /Users/t/Documents/datasets/time_series/multivariate/ice_cream_vs_heater.csv --lags 25 --h 10
 
         ```
@@ -208,6 +215,7 @@ def classification(ctx, file, base_model, n_hidden_features):
     Example:
 
         ```python
+
         techtonique ml classification /Users/t/Documents/datasets/tabular/classification/iris_dataset2.csv --base_model RandomForestRegressor
 
         ```
@@ -240,6 +248,7 @@ def regression(ctx, file, base_model, n_hidden_features):
     Example:
 
         ```python
+
         techtonique ml regression /Users/t/Documents/datasets/tabular/regression/mtcars2.csv --base_model ElasticNet
 
         ```
@@ -272,6 +281,7 @@ def chainladder(ctx, file):
     Example:
 
         ```python
+
         techtonique reserving chainladder /Users/t/Documents/datasets/tabular/triangle/abc.csv
 
         ```
@@ -296,8 +306,11 @@ def mack(ctx, file):
         dict: Result of the mack chain ladder
 
     Example:
+
         ```python
+
         techtonique reserving mack /Users/t/Documents/datasets/tabular/triangle/abc.csv
+
         ```
     """
     init_cli(ctx)
@@ -325,6 +338,7 @@ def survival(ctx, file, model):
     Example:
 
         ```python
+        
             techtonique survival /Users/t/Documents/datasets/tabular/survival/kidney.csv --model coxph
 
         ```

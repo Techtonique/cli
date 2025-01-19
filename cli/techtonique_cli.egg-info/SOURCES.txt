@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-setup.py
-cli/techtonique_cli.egg-info/PKG-INFO
-cli/techtonique_cli.egg-info/SOURCES.txt
-cli/techtonique_cli.egg-info/dependency_links.txt
-cli/techtonique_cli.egg-info/entry_points.txt
-cli/techtonique_cli.egg-info/requires.txt
-cli/techtonique_cli.egg-info/top_level.txt
