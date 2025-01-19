@@ -10,27 +10,27 @@ def cli():
     click.echo("Welcome to Techtonique CLI!")
 
 # # Help
-# python3 cli/cli.py --help
-# python3 cli/cli.py forecasting --help
-# python3 cli/cli.py forecasting univariate --help
-# python3 cli/cli.py ml --help
-# python3 cli/cli.py ml classification --help
-# python3 cli/cli.py reserving --help
-# python3 cli/cli.py survival --help
+# techtonique --help
+# techtonique forecasting --help
+# techtonique forecasting univariate --help
+# techtonique ml --help
+# techtonique ml classification --help
+# techtonique reserving --help
+# techtonique survival --help
 # # Univariate forecasting
-# python3 cli/cli.py forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 3
+# techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 3
 # # Multivariate forecasting
-# python3 cli/cli.py forecasting multivariate /Users/t/Documents/datasets/time_series/multivariate/ice_cream_vs_heater.csv --lags 25 --h 10
+# techtonique forecasting multivariate /Users/t/Documents/datasets/time_series/multivariate/ice_cream_vs_heater.csv --lags 25 --h 10
 # # Classification
-# python3 cli/cli.py ml classification /Users/t/Documents/datasets/tabular/classification/iris_dataset2.csv --base_model RandomForestRegressor
+# techtonique ml classification /Users/t/Documents/datasets/tabular/classification/iris_dataset2.csv --base_model RandomForestRegressor
 # # Regression
-# python3 cli/cli.py ml regression /Users/t/Documents/datasets/tabular/regression/mtcars2.csv --base_model ElasticNet
+# techtonique ml regression /Users/t/Documents/datasets/tabular/regression/mtcars2.csv --base_model ElasticNet
 # # Chain Ladder
-# python3 cli/cli.py reserving chainladder /Users/t/Documents/datasets/tabular/triangle/abc.csv
+# techtonique reserving chainladder /Users/t/Documents/datasets/tabular/triangle/abc.csv
 # # Mack Chain Ladder
-# python3 cli/cli.py reserving mack /Users/t/Documents/datasets/tabular/triangle/abc.csv
+# techtonique reserving mack /Users/t/Documents/datasets/tabular/triangle/abc.csv
 # # Survival Analysis
-# python3 cli/cli.py survival /Users/t/Documents/datasets/tabular/survival/kidney.csv --model coxph
+# techtonique survival /Users/t/Documents/datasets/tabular/survival/kidney.csv --model coxph
 class TechtoniqueCLI:
     def __init__(self, token=None):
         self.base_url = "https://www.techtonique.net"
@@ -338,7 +338,7 @@ def survival(ctx, file, model):
     Example:
 
         ```python
-        
+
             techtonique survival /Users/t/Documents/datasets/tabular/survival/kidney.csv --model coxph
 
         ```
