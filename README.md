@@ -28,6 +28,8 @@ All the datasets used in the examples below are available in [Techtonique/datase
 
 ### 2 - 1 - General usage 
 
+At the command line, type:
+
 ```bash
 techtonique --help
 
@@ -49,17 +51,8 @@ techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univa
 # Multivariate forecasting
 techtonique forecasting multivariate /Users/t/Documents/datasets/time_series/multivariate/ice_cream_vs_heater.csv --lags 25 --h 10
 
-# Classification
-techtonique ml classification /Users/t/Documents/datasets/tabular/classification/iris_dataset2.csv --base_model RandomForestRegressor
-
 # Regression
 techtonique ml regression /Users/t/Documents/datasets/tabular/regression/mtcars2.csv --base_model ElasticNet
-
-# Chain Ladder
-techtonique reserving chainladder /Users/t/Documents/datasets/tabular/triangle/abc.csv
-
-# Mack Chain Ladder
-techtonique reserving mack /Users/t/Documents/datasets/tabular/triangle/abc.csv
 
 # Survival Analysis
 techtonique survival /Users/t/Documents/datasets/tabular/survival/kidney.csv --model coxph
@@ -74,12 +67,6 @@ Then, either:
 export TECHTONIQUE_API_TOKEN=TOKEN
 ```
 - put the token in a `.env` file in the current directory.
-
-Here's how to export results to a CSV file:
-
-```bash
-techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 > forecast.csv
-```
 
 Here's how to **export results to a JSON file**:
 

@@ -54,13 +54,18 @@ class TechtoniqueCLI:
             to_csv_file = params.pop('to_csv', None)  # Remove from params and store
             
             with open(file_path, "rb") as f:
+                # Explicitly set the content type as 'text/csv'
                 files = {"file": (file_path.name, f, "text/csv")}
+                # Ensure params are strings
+                str_params = {k: str(v) for k, v in params.items()}
+                
                 response = requests.post(
                     f"{self.base_url}/{endpoint}",
                     headers=headers,
                     files=files,
-                    params=params,
+                    params=str_params,  # Use string parameters
                 )
+                
             response.raise_for_status()
             result = response.json()
             

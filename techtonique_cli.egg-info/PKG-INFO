@@ -52,6 +52,8 @@ All the datasets used in the examples below are available in [Techtonique/datase
 
 ### 2 - 1 - General usage 
 
+At the command line, type:
+
 ```bash
 techtonique --help
 
@@ -99,17 +101,13 @@ export TECHTONIQUE_API_TOKEN=TOKEN
 ```
 - put the token in a `.env` file in the current directory.
 
-Here's how to export results to a CSV file:
-
-```bash
-techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 > forecast.csv
-```
-
-Here's how to export results to a JSON file:
+Here's how to **export results to a JSON file**:
 
 ```bash
 techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 > forecast.json
 ```
+
+Here's how to **export results to a CSV file with selected columns**:
 
 ```bash
 techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 --select "lower, upper, mean" --to-csv forecast.csv
