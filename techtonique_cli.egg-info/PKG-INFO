@@ -1,6 +1,6 @@
 Metadata-Version: 2.2
 Name: techtonique_cli
-Version: 0.1.0
+Version: 0.2.0
 Summary: A CLI tool for Techtonique API
 Home-page: https://github.com/Techtonique/cli/
 Author: Techtonique
@@ -22,4 +22,83 @@ Dynamic: requires-dist
 Dynamic: requires-python
 Dynamic: summary
 
-# cli
+# CLI for Techtonique
+
+This a **Command Line Interface** (CLI) for [Techtonique](https://www.techtonique.net)'s [API](https://www.techtonique.net/docs). 
+
+## 1 - Installation
+
+In a virtual environment, run the following command:
+
+```bash
+pip install techtonique_cli
+```
+
+First, get a token from [techtonique.net/token](https://www.techtonique.net/token). If you want to avoid [providing a token](https://www.techtonique.net/token) each time you run the CLI, you can set the `TECHTONIQUE_API_TOKEN` environment variable (for 30 minutes). That is, either: 
+
+- set the `TECHTONIQUE_API_TOKEN` environment variable by replacing the `TOKEN` value below with your token.
+```bash
+export TECHTONIQUE_API_TOKEN=TOKEN
+```
+- put the token in a `.env` file in the current directory, as `TECHTONIQUE_API_TOKEN=TOKEN`.
+
+
+All the datasets used in the examples below are available in [Techtonique/datasets](https://github.com/Techtonique/datasets) repository.
+
+
+## 2 - Examples
+
+### 2 - 1 - General usage 
+
+```bash
+techtonique --help
+
+techtonique forecasting --help
+
+techtonique forecasting univariate --help
+
+techtonique ml --help
+
+techtonique ml classification --help
+
+techtonique reserving --help
+
+techtonique survival --help
+
+#  Univariate forecasting
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 3
+
+# Multivariate forecasting
+techtonique forecasting multivariate /Users/t/Documents/datasets/time_series/multivariate/ice_cream_vs_heater.csv --lags 25 --h 10
+
+# Classification
+techtonique ml classification /Users/t/Documents/datasets/tabular/classification/iris_dataset2.csv --base_model RandomForestRegressor
+
+# Regression
+techtonique ml regression /Users/t/Documents/datasets/tabular/regression/mtcars2.csv --base_model ElasticNet
+
+# Chain Ladder
+techtonique reserving chainladder /Users/t/Documents/datasets/tabular/triangle/abc.csv
+
+# Mack Chain Ladder
+techtonique reserving mack /Users/t/Documents/datasets/tabular/triangle/abc.csv
+
+# Survival Analysis
+techtonique survival /Users/t/Documents/datasets/tabular/survival/kidney.csv --model coxph
+```
+
+### 2 - 2 - Interacting with CSV files
+
+Then, either: 
+- provide the token as a command line argument.
+- set the `TECHTONIQUE_API_TOKEN` environment variable by replacing the `TOKEN` value below with your token.
+```bash
+export TECHTONIQUE_API_TOKEN=TOKEN
+```
+- put the token in a `.env` file in the current directory.
+
+Here's how to export results to a CSV file:
+
+```bash
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 > forecast.csv
+```

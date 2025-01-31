@@ -2,6 +2,7 @@ import click
 import requests
 import os
 from pathlib import Path
+import sys
 
 
 @click.command()
@@ -34,13 +35,15 @@ def cli():
 class TechtoniqueCLI:
     def __init__(self, token=None):
         self.base_url = "https://www.techtonique.net"
-        self.token = input(
-            "Enter your API token (or press Enter to use the environment variable): "
-        ) or os.getenv("TECHTONIQUE_API_TOKEN")
+        self.token = token or os.getenv("TECHTONIQUE_API_TOKEN")
         if not self.token:
-            raise ValueError(
-                "API token must be provided or set in TECHTONIQUE_API_TOKEN environment variable"
-            )
+            # Only prompt if token not found in environment
+            print("Enter your API token: ", file=sys.stderr, flush=True, end='')
+            self.token = input()
+            if not self.token:
+                raise ValueError(
+                    "API token must be provided or set in TECHTONIQUE_API_TOKEN environment variable"
+                )
 
     def _make_request(self, endpoint, file_path, params):
         headers = {"Authorization": f"Bearer {self.token}"}
