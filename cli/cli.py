@@ -3,6 +3,8 @@ import requests
 import os
 from pathlib import Path
 import sys
+import csv
+import json
 
 
 @click.command()
@@ -48,6 +50,9 @@ class TechtoniqueCLI:
     def _make_request(self, endpoint, file_path, params):
         headers = {"Authorization": f"Bearer {self.token}"}
         try:
+            # Extract to_csv parameter before making request
+            to_csv_file = params.pop('to_csv', None)  # Remove from params and store
+            
             with open(file_path, "rb") as f:
                 files = {"file": (file_path.name, f, "text/csv")}
                 response = requests.post(
@@ -57,9 +62,33 @@ class TechtoniqueCLI:
                     params=params,
                 )
             response.raise_for_status()
-            return response.json()
+            result = response.json()
+            
+            # Handle select parameter if present
+            if 'select' in params and params['select']:
+                keys = [k.strip() for k in params['select'].split(',')]
+                result = {k: result[k] for k in keys if k in result}
+                # Parse string representations of lists into actual lists
+                for k, v in result.items():
+                    if isinstance(v, str) and v.startswith('[') and v.endswith(']'):
+                        result[k] = json.loads(v)
+            
+            # Handle CSV conversion if to_csv_file is present
+            if to_csv_file:
+                if all(isinstance(v, list) for v in result.values()):
+                    with open(to_csv_file, 'w', newline='') as csvfile:
+                        writer = csv.writer(csvfile)
+                        # Write header
+                        writer.writerow(result.keys())
+                        # Write data rows
+                        writer.writerows(zip(*result.values()))
+                    return f"Results written to {to_csv_file}"
+                else:
+                    click.echo(f"Warning: Data format not suitable for CSV conversion", err=True)
+            
+            return result
         except requests.exceptions.RequestException as e:
-            click.echo(f"Error making request: {e}")
+            click.echo(f"Error making request: {e}", err=True)
             return None
 
 
@@ -102,8 +131,10 @@ def forecasting(ctx):
 @click.option("--type-pi", default="kde", help="Type of prediction interval")
 @click.option("--replications", default=4, help="Number of replications")
 @click.option("--h", default=3, help="Forecast horizon")
+@click.option("--select", help="Comma-separated list of keys to select from output")
+@click.option("--to-csv", help="Output results to CSV file")
 @click.pass_context
-def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replications, h):
+def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replications, h, select, to_csv):
     """Univariate forecasting
 
     Parameters:
@@ -121,6 +152,10 @@ def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replicat
             Number of replications
         h: int
             Forecast horizon
+        select: str
+            Comma-separated list of keys to select from output
+        to_csv: str
+            Output results to CSV file
 
     Returns:
         dict: Result of the forecasting
@@ -141,6 +176,8 @@ def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replicat
         "type_pi": type_pi,
         "replications": replications,
         "h": h,
+        "select": select,
+        "to_csv": to_csv
     }
     result = ctx.obj["cli"]._make_request("forecasting", Path(file), params)
     click.echo(result)
@@ -152,8 +189,10 @@ def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replicat
 @click.option("--n-hidden-features", default=5, help="Number of hidden features")
 @click.option("--lags", default=25, help="Number of lags")
 @click.option("--h", default=3, help="Forecast horizon")
+@click.option("--select", help="Comma-separated list of keys to select from output")
+@click.option("--to-csv", help="Output results to CSV file")
 @click.pass_context
-def multivariate(ctx, file, base_model, n_hidden_features, lags, h):
+def multivariate(ctx, file, base_model, n_hidden_features, lags, h, select, to_csv):
     """Multivariate forecasting
 
     Parameters:
@@ -167,6 +206,10 @@ def multivariate(ctx, file, base_model, n_hidden_features, lags, h):
             Number of lags
         h: int
             Forecast horizon
+        select: str
+            Comma-separated list of keys to select from output
+        to_csv: str
+            Output results to CSV file
 
     Returns:
         dict: Result of the forecasting
@@ -185,6 +228,8 @@ def multivariate(ctx, file, base_model, n_hidden_features, lags, h):
         "n_hidden_features": n_hidden_features,
         "lags": lags,
         "h": h,
+        "select": select,
+        "to_csv": to_csv
     }
     result = ctx.obj["cli"]._make_request("forecasting", Path(file), params)
     click.echo(result)
@@ -200,8 +245,10 @@ def ml():
 @click.argument("file", type=click.Path(exists=True))
 @click.option("--base_model", default="RandomForestRegressor", help="Base model to use")
 @click.option("--n-hidden-features", default=5, help="Number of hidden features")
+@click.option("--select", help="Comma-separated list of keys to select from output")
+@click.option("--to-csv", help="Output results to CSV file")
 @click.pass_context
-def classification(ctx, file, base_model, n_hidden_features):
+def classification(ctx, file, base_model, n_hidden_features, select, to_csv):
     """Classification tasks
 
     Parameters:
@@ -211,6 +258,10 @@ def classification(ctx, file, base_model, n_hidden_features):
             Base model to use
         n_hidden_features: int
             Number of hidden features
+        select: str
+            Comma-separated list of keys to select from output
+        to_csv: str
+            Output results to CSV file
 
     Returns:
         dict: Result of the classification
@@ -224,7 +275,7 @@ def classification(ctx, file, base_model, n_hidden_features):
         ```
     """
     init_cli(ctx)
-    params = {"base_model": base_model, "n_hidden_features": n_hidden_features}
+    params = {"base_model": base_model, "n_hidden_features": n_hidden_features, "select": select, "to_csv": to_csv}
     result = ctx.obj["cli"]._make_request("mlclassification", Path(file), params)
     click.echo(result)
 
@@ -233,8 +284,10 @@ def classification(ctx, file, base_model, n_hidden_features):
 @click.argument("file", type=click.Path(exists=True))
 @click.option("--base_model", default="ElasticNet", help="Base model to use")
 @click.option("--n-hidden-features", default=5, help="Number of hidden features")
+@click.option("--select", help="Comma-separated list of keys to select from output")
+@click.option("--to-csv", help="Output results to CSV file")
 @click.pass_context
-def regression(ctx, file, base_model, n_hidden_features):
+def regression(ctx, file, base_model, n_hidden_features, select, to_csv):
     """Regression tasks
 
     Parameters:
@@ -244,6 +297,10 @@ def regression(ctx, file, base_model, n_hidden_features):
             Base model to use
         n_hidden_features: int
             Number of hidden features
+        select: str
+            Comma-separated list of keys to select from output
+        to_csv: str
+            Output results to CSV file
 
     Returns:
         dict: Result of the regression
@@ -257,7 +314,7 @@ def regression(ctx, file, base_model, n_hidden_features):
         ```
     """
     init_cli(ctx)
-    params = {"base_model": base_model, "n_hidden_features": n_hidden_features}
+    params = {"base_model": base_model, "n_hidden_features": n_hidden_features, "select": select, "to_csv": to_csv}
     result = ctx.obj["cli"]._make_request("mlregression", Path(file), params)
     click.echo(result)
 
@@ -270,13 +327,19 @@ def reserving():
 
 @reserving.command()
 @click.argument("file", type=click.Path(exists=True))
+@click.option("--select", help="Comma-separated list of keys to select from output")
+@click.option("--to-csv", help="Output results to CSV file")
 @click.pass_context
-def chainladder(ctx, file):
+def chainladder(ctx, file, select, to_csv):
     """Chain Ladder method
 
     Parameters:
         file: str
             Path to the CSV file
+        select: str
+            Comma-separated list of keys to select from output
+        to_csv: str
+            Output results to CSV file
 
     Returns:
         dict: Result of the chain ladder
@@ -290,20 +353,26 @@ def chainladder(ctx, file):
         ```
     """
     init_cli(ctx)
-    params = {"method": "chainladder"}
+    params = {"method": "chainladder", "select": select, "to_csv": to_csv}
     result = ctx.obj["cli"]._make_request("reserving", Path(file), params)
     click.echo(result)
 
 
 @reserving.command()
 @click.argument("file", type=click.Path(exists=True))
+@click.option("--select", help="Comma-separated list of keys to select from output")
+@click.option("--to-csv", help="Output results to CSV file")
 @click.pass_context
-def mack(ctx, file):
+def mack(ctx, file, select, to_csv):
     """Mack Chain Ladder method
 
     Parameters:
         file: str
             Path to the CSV file
+        select: str
+            Comma-separated list of keys to select from output
+        to_csv: str
+            Output results to CSV file
 
     Returns:
         dict: Result of the mack chain ladder
@@ -317,7 +386,7 @@ def mack(ctx, file):
         ```
     """
     init_cli(ctx)
-    params = {"method": "mack"}
+    params = {"method": "mack", "select": select, "to_csv": to_csv}
     result = ctx.obj["cli"]._make_request("reserving", Path(file), params)
     click.echo(result)
 
@@ -325,8 +394,10 @@ def mack(ctx, file):
 @cli.command()
 @click.argument("file", type=click.Path(exists=True))
 @click.option("--model", default="coxph", help="Survival model to use")
+@click.option("--select", help="Comma-separated list of keys to select from output")
+@click.option("--to-csv", help="Output results to CSV file")
 @click.pass_context
-def survival(ctx, file, model):
+def survival(ctx, file, model, select, to_csv):
     """Survival Analysis
 
     Parameters:
@@ -334,6 +405,10 @@ def survival(ctx, file, model):
             Path to the CSV file
         model: str
             Survival model to use
+        select: str
+            Comma-separated list of keys to select from output
+        to_csv: str
+            Output results to CSV file
 
     Returns:
         dict: Result of the survival analysis
@@ -347,7 +422,7 @@ def survival(ctx, file, model):
         ```
     """
     init_cli(ctx)
-    params = {"model": model}
+    params = {"model": model, "select": select, "to_csv": to_csv}
     result = ctx.obj["cli"]._make_request("survivalregression", Path(file), params)
     click.echo(result)
 

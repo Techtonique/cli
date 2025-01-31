@@ -1,6 +1,8 @@
 # CLI for Techtonique
 
-This a **Command Line Interface** (CLI) for [Techtonique](https://www.techtonique.net)'s [API](https://www.techtonique.net/docs). Working on all operating systems (Windows, MacOS, Linux).
+This a **Command Line Interface** (CLI) for [Techtonique](https://www.techtonique.net)'s [API](https://www.techtonique.net/docs). Working on all operating systems (Windows, MacOS, Linux). You may find these resources useful: 
+- [https://jeroenjanssens.com/dsatcl/chapter-5-scrubbing-data](https://jeroenjanssens.com/dsatcl/chapter-5-scrubbing-data)
+- [https://jeroenjanssens.com/dsatcl/chapter-7-exploring-data](https://jeroenjanssens.com/dsatcl/chapter-7-exploring-data)
 
 ## 1 - Installation
 
@@ -79,8 +81,14 @@ Here's how to export results to a CSV file:
 techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 > forecast.csv
 ```
 
-Here's how to export results to a JSON file:
+Here's how to **export results to a JSON file**:
 
 ```bash
 techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 > forecast.json
+```
+
+Here's how to **export results to a CSV file with selected columns**:
+
+```bash
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 --select "lower, upper, mean" --to-csv forecast.csv
 ```
