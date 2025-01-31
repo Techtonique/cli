@@ -23,6 +23,7 @@ export TECHTONIQUE_API_TOKEN=TOKEN
 
 All the datasets used in the examples below are available in [Techtonique/datasets](https://github.com/Techtonique/datasets) repository.
 
+![xxx](2025-01-31-image1.gif)
 
 ## 2 - Examples
 
