@@ -75,17 +75,8 @@ techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univa
 # Multivariate forecasting
 techtonique forecasting multivariate /Users/t/Documents/datasets/time_series/multivariate/ice_cream_vs_heater.csv --lags 25 --h 10
 
-# Classification
-techtonique ml classification /Users/t/Documents/datasets/tabular/classification/iris_dataset2.csv --base_model RandomForestRegressor
-
 # Regression
 techtonique ml regression /Users/t/Documents/datasets/tabular/regression/mtcars2.csv --base_model ElasticNet
-
-# Chain Ladder
-techtonique reserving chainladder /Users/t/Documents/datasets/tabular/triangle/abc.csv
-
-# Mack Chain Ladder
-techtonique reserving mack /Users/t/Documents/datasets/tabular/triangle/abc.csv
 
 # Survival Analysis
 techtonique survival /Users/t/Documents/datasets/tabular/survival/kidney.csv --model coxph
@@ -111,4 +102,17 @@ Here's how to **export results to a CSV file with selected columns**:
 
 ```bash
 techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 --select "lower, upper, mean" --to-csv forecast.csv
+```
+
+### 2 - 3 - Plotting
+
+```bash
+# Display plot interactively
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --h 10 --plot
+
+# Create forecast and save plot
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --h 10 --plot-file forecast.png
+
+# Create forecast with specific fields and save both CSV and plot
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --h 10 --select "mean,lower,upper" --to-csv forecast.csv --plot-file forecast.png
 ```

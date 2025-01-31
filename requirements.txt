@@ -1,3 +1,8 @@
 click
 pdoc
 requests
+matplotlib
+scikit-learn
+statsmodels
+numpy
+scipy

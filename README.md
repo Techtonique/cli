@@ -79,3 +79,13 @@ Here's how to **export results to a CSV file with selected columns**:
 ```bash
 techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --base_model RidgeCV --h 10 --select "lower, upper, mean" --to-csv forecast.csv
 ```
+
+### 2 - 3 - Plotting
+
+```bash
+# Display plot interactively
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --h 10 --plot
+
+# Create forecast and save plot
+techtonique forecasting univariate /Users/t/Documents/datasets/time_series/univariate/a10.csv --h 10 --plot-file forecast.png
+```

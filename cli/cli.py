@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 import csv
 import json
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 @click.command()
@@ -132,8 +134,10 @@ def forecasting(ctx):
 @click.option("--h", default=3, help="Forecast horizon")
 @click.option("--select", help="Comma-separated list of keys to select from output")
 @click.option("--to-csv", help="Output results to CSV file")
+@click.option("--plot", help="Save forecast plot to file (e.g., 'forecast.png') or display if no filename given", is_flag=True)
+@click.option("--plot-file", help="Save forecast plot to specified file")
 @click.pass_context
-def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replications, h, select, to_csv):
+def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replications, h, select, to_csv, plot, plot_file):
     """Univariate forecasting
 
     Parameters:
@@ -155,6 +159,10 @@ def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replicat
             Comma-separated list of keys to select from output
         to_csv: str
             Output results to CSV file
+        plot: bool
+            Save forecast plot to file (e.g., 'forecast.png') or display if no filename given
+        plot_file: str
+            Save forecast plot to specified file
 
     Returns:
         dict: Result of the forecasting
@@ -175,10 +183,53 @@ def univariate(ctx, file, base_model, n_hidden_features, lags, type_pi, replicat
         "type_pi": type_pi,
         "replications": replications,
         "h": h,
-        "select": select,
+        "select": select or "mean,lower,upper" if (plot or plot_file) else select,
         "to_csv": to_csv
     }
     result = ctx.obj["cli"]._make_request("forecasting", Path(file), params)
+        
+    # Handle plotting if requested
+    if (plot or plot_file) and isinstance(result, dict):
+        required_keys = {'mean', 'lower', 'upper'}
+        if all(k in result for k in required_keys):
+            try:
+                plt.figure(figsize=(10, 6))
+                x = range(len(result['mean']))
+                
+                # Parse string lists if necessary
+                mean = json.loads(result['mean']) if isinstance(result['mean'], str) else result['mean']
+                lower = json.loads(result['lower']) if isinstance(result['lower'], str) else result['lower']
+                upper = json.loads(result['upper']) if isinstance(result['upper'], str) else result['upper']
+                
+                # Debug information
+                click.echo(f"Debug - Data lengths: mean={len(mean)}, lower={len(lower)}, upper={len(upper)}", err=True)
+                
+                # Plot mean forecast
+                plt.plot(x, mean, 'b-', label='Forecast')
+                
+                # Plot confidence interval
+                plt.fill_between(x, lower, upper, color='b', alpha=0.1, label='Confidence Interval')
+                
+                plt.title('Forecast with Confidence Intervals')
+                plt.xlabel('Time Steps')
+                plt.ylabel('Value')
+                plt.legend()
+                plt.grid(True)
+                
+                if plot_file:
+                    # Save plot to file
+                    plt.savefig(plot_file)
+                    plt.close()
+                    click.echo(f"Plot saved to {plot_file}")
+                elif plot:
+                    # Display plot
+                    plt.show(block=True)
+                
+            except Exception as e:
+                click.echo(f"Error creating plot: {str(e)}", err=True)
+        else:
+            click.echo(f"Debug - Missing required keys. Available keys: {result.keys()}", err=True)
+    
     click.echo(result)
 
 
